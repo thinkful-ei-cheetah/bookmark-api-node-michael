@@ -3,7 +3,6 @@ const express = require('express');
 const uuid = require('uuid/v4');
 const bookmarksRouter = express.Router();
 const bodyParser = express.json();
-const _ = require('lodash');
 
 const store = [];
 
@@ -53,7 +52,14 @@ bookmarksRouter
     validateUrl,
     validateRating,
     (req, res) => {
-      const bookmark = _.pick(req.body, ['title', 'url', 'desc', 'rating']);
+      const bookmark = {};
+      const allowed = ['title', 'url', 'desc', 'rating'];
+      Object.keys(req.body).forEach(key => {
+        if (allowed.includes(key)) {
+          bookmark[key] = req.body[key];
+        }
+      });
+      
       bookmark.id = uuid();
 
       store.push(bookmark);
