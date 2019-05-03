@@ -28,6 +28,16 @@ app.use(cors({
   }
 }));
 
+app.use(function validateApiKey(req, res, next){
+  const receivedKey = req.get('Authorization');
+  const actualKey = process.env.API_KEY;
+
+  if (!receivedKey || receivedKey.split(' ')[1] !== actualKey) {
+    res.status(401).json({error: 'Unauthorized request'});
+  }
+  next();
+});
+
 app.use(bookmarksRouter);
 
 app.use(function errorHandler(error, req, res, next) {
