@@ -8,7 +8,7 @@ const { NODE_ENV } = require('./config');
 const bookmarksRouter = require('./bookmarks/bookmarks-router');
 
 const app = express();
-const morganOption = (NODE_ENV === 'production') ? 'tiny' : 'common';
+const morganOption = (NODE_ENV === 'production') ? 'tiny' : 'debug';
 
 app.use(morgan(morganOption));
 app.use(helmet());
@@ -39,16 +39,18 @@ app.use(function validateApiKey(req, res, next){
 });
 
 app.use(bookmarksRouter);
+app.use(errorHandler);
 
-app.use(function errorHandler(error, req, res, next) {
-  let response;
+function errorHandler(error, req, res, next) {
+  const code = error.status || 500;
+
   if (NODE_ENV === 'production') {
-    response = { error: { message: 'server error' } };
+    error.message = code === 500 ? 'internal server error' : error.message;
   } else {
     console.error(error);
-    response = { message: error.message, error };
   }
-  res.status(500).json(response);
-});
+
+  res.status(code).json({ message: error.message });
+}
 
 module.exports = app;
