@@ -1,7 +1,9 @@
 'use strict';
 const app = require('./app');
-const { PORT } = require('./config')
+const { NODE_ENV, PORT } = require('./config');
 
 app.listen(PORT, () => {
-  console.log(`Server listening at http://localhost:${PORT}`);
+  if (NODE_ENV !== 'production') {
+    console.log(`Server listening at http://localhost:${PORT}`);
+  }
 });
