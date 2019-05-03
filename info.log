@@ -1,0 +1,4 @@
+{"message":"bookmark created: [object Object]","level":"info"}
+{"message":"bookmark created: id=e7f8354c-2212-42ec-87b9-7b05736370e8","level":"info"}
+{"message":"bookmark created: id=41bf23f7-1df0-4126-86c2-685256f36166","level":"info"}
+{"message":"unable to find bookmark with id 41bf23f7-1df0-4126-86c2-685256f361666","level":"error"}
