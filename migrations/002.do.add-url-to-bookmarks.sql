@@ -1,0 +1,3 @@
+ALTER TABLE bookmarks
+  ADD COLUMN
+    url TEXT NOT NULL;
