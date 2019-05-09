@@ -2,6 +2,7 @@
 const express = require('express');
 const bookmarksRouter = express.Router();
 const bodyParser = express.json();
+const xss = require('xss');
 
 const BookmarksService = require('./bookmarks-service');
 
@@ -74,7 +75,7 @@ bookmarksRouter
       const allowed = ['title', 'url', 'desc', 'rating'];
       Object.keys(req.body).forEach(key => {
         if (allowed.includes(key)) {
-          bookmark[key] = req.body[key];
+          bookmark[key] = xss(req.body[key]);
         }
       });
       
@@ -125,13 +126,21 @@ bookmarksRouter
       const db = req.app.get('db');
       const {bookmarkId} = req.params;
       const {title} = req.body;
+      const fields = {};
 
       if (title && !title.length) {
         return next({message: 'title must be at least 1 character long', status: 400});
       }
 
+      const allowed = ['title', 'url', 'desc', 'rating'];
+      Object.keys(req.body).forEach(key => {
+        if (allowed.includes(key)) {
+          fields[key] = xss(req.body[key]);
+        }
+      });
+
       try {
-        await BookmarksService.update(db, bookmarkId, req.body);
+        await BookmarksService.update(db, bookmarkId, fields);
         return res.json({});
       } catch(err) {
         next(err);

@@ -96,12 +96,13 @@ describe('Bookmarks Controller', () => {
           .expect(201)
           .then(res => {
             expect(res.body.title).to.eql(bookmark.title);
+            expect(res.headers.location).to.equal(`/bookmarks/${res.body.id}`);
           });
       });
     });
 
     context('when a field is improperly submitted', () => {
-      it('returns a 400', () => {
+      it('returns a 400 with no url given', () => {
         const bookmark = {title: 'New Bookmark', rating: '5'};
         return supertest(app)
           .post('/bookmarks')
@@ -129,7 +130,7 @@ describe('Bookmarks Controller', () => {
     });
 
     context('when invalid fields present', () => {
-      it('returns a 400', async () => {
+      it('returns a 400 with invalid url', async () => {
         const bookmark = await BookmarksService.last(db);
         
         return supertest(app)
@@ -152,7 +153,13 @@ describe('Bookmarks Controller', () => {
         return supertest(app)
           .delete(`/bookmarks/${bookmark.id}`)
           .set('Authorization', `Bearer ${process.env.API_KEY}`)
-          .expect(200);
+          .expect(200)
+          .then(() => {
+            return supertest(app)
+              .get(`/articles/${bookmark.id}`)
+              .set('Authorization', `Bearer ${process.env.API_KEY}`)
+              .expect(404);
+          });
       });
     });
 
